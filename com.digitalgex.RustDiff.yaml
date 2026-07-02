@@ -29,6 +29,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/jereok91/rustdiff.git
-        tag: v0.1.8
-        commit: 3390192595977923341e75c52e7e36c77851c4a8
+        tag: v0.1.9
+        commit: 051fa67035c973e5e23b73558c46b7c5058244f2
       - cargo-sources.json
