@@ -1,6 +1,6 @@
 app-id: com.digitalgex.RustDiff
 runtime: org.gnome.Platform
-runtime-version: '50'
+runtime-version: "50"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -8,9 +8,11 @@ command: rustdiff
 
 finish-args:
   - --share=ipc
-  - --socket=fallback-x11
   - --socket=wayland
+  - --socket=fallback-x11
   - --device=dri
+  # Sin --filesystem: el dialogo de archivos (GtkFileChooserNative) y los
+  # archivos abiertos desde el escritorio pasan por el portal de documentos.
 
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
@@ -21,14 +23,36 @@ modules:
   - name: rustdiff
     buildsystem: simple
     build-commands:
-      - cargo --offline build --release --manifest-path Cargo.toml --verbose
+      - test -f desktop/dist/index.html
+      - cargo --offline build --release --features custom-protocol -p rustdiff-desktop
       - install -Dm755 ./target/release/rustdiff /app/bin/rustdiff
       - install -Dm644 ./data/com.digitalgex.RustDiff.desktop -t /app/share/applications
       - install -Dm644 ./data/com.digitalgex.RustDiff.metainfo.xml -t /app/share/metainfo
       - install -Dm644 ./data/icons/com.digitalgex.RustDiff.svg -t /app/share/icons/hicolor/scalable/apps
+      # PNGs en todos los tamaños que pide `appstreamcli compose` (incluidos los
+      # @2): así nunca decodifica el SVG, que el builder de Flathub no puede leer
+      # (icon-file-read-error). Se generan desde el SVG (docs/RELEASING.md).
+      - for s in 48x48 64x64 128x128 256x256 512x512 64x64@2 128x128@2; do install -Dm644 ./data/icons/hicolor/$s/apps/com.digitalgex.RustDiff.png -t /app/share/icons/hicolor/$s/apps; done
     sources:
       - type: git
         url: https://github.com/jereok91/rustdiff.git
-        tag: v0.4.0
-        commit: 8a8f352b2900450c71667dd20a87c73a775f4d5c
+        tag: v1.0.1
+        # Lo completa release-flathub.yml (o a mano, ver flathub/README.md)
+        # con el commit al que apunta el tag.
+        commit: d1c31b42ab0c61be44785c0c307a7d313db970c2
+        # flatpak-external-data-checker: si el workflow `release-flathub`
+        # del repo upstream falla, este metadato deja que el bot oficial
+        # de Flathub detecte nuevos tags y abra un PR por su cuenta.
+        x-checker-data:
+          type: git
+          tag-pattern: ^v(\d+\.\d+\.\d+)$
+      # Frontend React ya compilado (`pnpm build` de desktop/ en el mismo tag),
+      # adjuntado al release por release-flathub.yml. Se usa porque el
+      # frontend usa pnpm y todavia no hay una ruta verificada de fuentes npm
+      # offline (flatpak-node-generator) para pnpm-lock.yaml; ver
+      # flathub/README.md.
+      - type: archive
+        url: https://github.com/jereok91/rustdiff/releases/download/v1.0.1/rustdiff-frontend-1.0.1.tar.gz
+        sha256: 919d6f603ca65ba221d4ddbcda5fda8115b04c459bb8f8e262f3b33b1f529529
+        dest: desktop/dist
       - cargo-sources.json
