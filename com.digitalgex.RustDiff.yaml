@@ -35,10 +35,10 @@ modules:
     sources:
       - type: git
         url: https://github.com/jereok91/rustdiff.git
-        tag: v1.0.5
+        tag: v1.0.6
         # Lo completa release-flathub.yml (o a mano, ver flathub/README.md)
         # con el commit al que apunta el tag.
-        commit: c603c3724c1a4f9ed5093a891bba36d88828d2d2
+        commit: 370d605f828445a1cab734f9ed4557c78a1795d9
         # flatpak-external-data-checker: si el workflow `release-flathub`
         # del repo upstream falla, este metadato deja que el bot oficial
         # de Flathub detecte nuevos tags y abra un PR por su cuenta.
@@ -51,7 +51,7 @@ modules:
       # offline (flatpak-node-generator) para pnpm-lock.yaml; ver
       # flathub/README.md.
       - type: archive
-        url: https://github.com/jereok91/rustdiff/releases/download/v1.0.5/rustdiff-frontend-1.0.5.tar.gz
-        sha256: 94c38df4106565fa496717388f8b845b3e568de3ead8e4a67a1858977c121d0f
+        url: https://github.com/jereok91/rustdiff/releases/download/v1.0.6/rustdiff-frontend-1.0.6.tar.gz
+        sha256: 01e93f703c073f82558fb24a52df5109b54ed35cf87a53c77deef4f7852885dd
         dest: desktop/dist
       - cargo-sources.json
